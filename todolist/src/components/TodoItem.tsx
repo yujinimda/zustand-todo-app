@@ -6,7 +6,7 @@ type TodoItemProps = {
 };
 
 export default function Todoitem({ todo }: TodoItemProps){
-  const {toggleTodo, deleteTodo, editTodo} = useTodoStore() ;
+  const {toggleTodo, deleteTodo, editTodo, importantToggle} = useTodoStore() ;
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [editText, setEditText] = useState(todo.text); //수정 전 테스트
 
@@ -41,6 +41,7 @@ export default function Todoitem({ todo }: TodoItemProps){
       <button onClick={() => deleteTodo(todo.id)}>
         X
       </button>
+      <button onClick={() => importantToggle(todo.id)}>{todo.isImportant ? "⭐" : "☆"}</button>
     </li>
   )
 }

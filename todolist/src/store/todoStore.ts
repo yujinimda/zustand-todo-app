@@ -7,6 +7,7 @@ export type Todo = {
   id: number;
   text: string;
   completed: boolean;
+  isImportant: boolean;
 };
 
 //Zustand 스토어 생성
@@ -19,6 +20,8 @@ type TodoStore = {
   allDeleteTodo: () => void; //전체 삭제 기능
   toggleTodo: (id: number) => void; // 완료 상태 변경
   editTodo: (id: number, newText: string) => void; // 수정 기능
+  importantToggle: (id: number) => void; // 중요 표시 기능
+  importantTodo:( isImportant: boolean) => void; // 중요 배열
 }
 
 export const useTodoStore = create<TodoStore>()(
@@ -27,7 +30,7 @@ export const useTodoStore = create<TodoStore>()(
       todos: [],
       addTodo: (text) =>
         set((state) => ({
-          todos: [...state.todos, { id: Date.now(), text, completed: false }],
+          todos: [...state.todos, { id: Date.now(), text, completed: false, isImportant: false}],
         })),
       deleteTodo: (id) =>
         set((state) => ({
@@ -48,6 +51,16 @@ export const useTodoStore = create<TodoStore>()(
       allDeleteTodo: () =>
         set(() => ({
           todos: [],
+        })),
+      importantToggle: (id) =>
+        set((state) => ({
+          todos: state.todos.map((todo) => 
+            todo.id === id ? {...todo, isImportant: !todo.isImportant} :todo
+          ),
+        })),
+      importantTodo: () =>
+        set((state) => ({
+          todos: state.todos.filter((todo) => todo.isImportant !== false),
         })),
     }),
     {

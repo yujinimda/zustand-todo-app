@@ -4,7 +4,7 @@ import { useTodoStore } from './store/todoStore';
 import { useState } from "react";
 
 function App() {
-  const {todos, addTodo, allDeleteTodo} = useTodoStore() ;
+  const {todos, addTodo, allDeleteTodo, importantTodo} = useTodoStore() ;
   const [text, setText] = useState("");
 
   //입력값이 변경될때마다 실행
@@ -40,6 +40,12 @@ function App() {
         <button onClick={allDeleteTodo}>
         전체삭제
         </button>
+        <button onClick={importantTodo}>
+        중요만 보기
+        </button>
+        {/* <button onClick={}>
+        전체보기
+        </button> */}
       </div>
       {/* 리스트 */}
       <div>
