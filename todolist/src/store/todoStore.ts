@@ -3,7 +3,7 @@ import { persist, createJSONStorage } from "zustand/middleware";
 
 // 스토어에 일단 필요한거 다 담아야하는 배열, 추가한 todo(객체){id, 내용, 완료여부}...
 // 힘수 : 버튼누르면 추가하기 함수, 수정하기 함수, 삭제하기 함수, 완료상태변경함수 
-type Todo = {
+export type Todo = {
   id: number;
   text: string;
   completed: boolean;

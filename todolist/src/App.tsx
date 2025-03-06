@@ -4,7 +4,7 @@ import { useTodoStore } from './store/todoStore';
 import { useState } from "react";
 
 function App() {
-  const {todos, addTodo, toggleTodo, deleteTodo} = useTodoStore() ;
+  const {todos, addTodo} = useTodoStore() ;
   const [text, setText] = useState("");
 
   //입력값이 변경될때마다 실행
@@ -42,21 +42,7 @@ function App() {
       <div>
         <ul>
           {todos.map((todo)=>(
-            <li key={todo.id}>
-              <input
-                type="checkbox"
-                checked={todo.completed}
-                onChange={() => toggleTodo(todo.id)}
-              />
-              <input
-                type="text"
-                value={todo.text}
-              />
-              <button onClick={() => deleteTodo(todo.id)}>
-                X
-              </button>
-              <Todoitem todo={todo}/>
-            </li>
+            <Todoitem todo={todo}/>
           ))}
         </ul>
       </div>
