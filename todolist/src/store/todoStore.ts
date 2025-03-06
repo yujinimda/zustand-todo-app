@@ -16,6 +16,7 @@ type TodoStore = {
   todos: Todo[];
   addTodo: (text: string) => void; // 추가 기능
   deleteTodo: (id: number) => void; // 삭제 기능
+  allDeleteTodo: () => void; //전체 삭제 기능
   toggleTodo: (id: number) => void; // 완료 상태 변경
   editTodo: (id: number, newText: string) => void; // 수정 기능
 }
@@ -43,6 +44,10 @@ export const useTodoStore = create<TodoStore>()(
           todos: state.todos.map((todo) =>
             todo.id === id ? { ...todo, text: newText } : todo
           ),
+        })),
+      allDeleteTodo: () =>
+        set(() => ({
+          todos: [],
         })),
     }),
     {
