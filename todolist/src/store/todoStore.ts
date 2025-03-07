@@ -20,14 +20,18 @@ type TodoStore = {
   allDeleteTodo: () => void; //전체 삭제 기능
   toggleTodo: (id: number) => void; // 완료 상태 변경
   editTodo: (id: number, newText: string) => void; // 수정 기능
+  isFiltered: boolean; //필터 적용 여부
   importantToggle: (id: number) => void; // 중요 표시 기능
-  importantTodo:( isImportant: boolean) => void; // 중요 배열
+  importantTodo:( isImportant: boolean); // 중요 배열
+  importantFilterToggle: () => void; // 중요 필터 토글
 }
 
 export const useTodoStore = create<TodoStore>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       todos: [],
+
+      importantFilterToggle: false, // 필터링 안됨
       addTodo: (text) =>
         set((state) => ({
           todos: [...state.todos, { id: Date.now(), text, completed: false, isImportant: false}],
@@ -62,6 +66,20 @@ export const useTodoStore = create<TodoStore>()(
         set((state) => ({
           todos: state.todos.filter((todo) => todo.isImportant !== false),
         })),
+      importantFilterToggle: () => {
+        const {isFiltered, todos} = get();
+
+        if (isFiltered) {
+          // 필터 해제 (전체 보기)
+          set({ filteredTodos: todos, isFiltered: false });
+        } else {
+          // 중요 투두만 보기
+          set({
+            filteredTodos: todos.filter((todo) => todo.isImportant),
+            isFiltered: true,
+          });
+        }
+      }
     }),
     {
       name: "todo-storage", // 로컬 스토리지 키 이름

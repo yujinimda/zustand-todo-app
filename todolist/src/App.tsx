@@ -4,8 +4,12 @@ import { useTodoStore } from './store/todoStore';
 import { useState } from "react";
 
 function App() {
-  const {todos, addTodo, allDeleteTodo, importantTodo} = useTodoStore() ;
+  const {todos, addTodo, allDeleteTodo, importantTodo} = useTodoStore();
   const [text, setText] = useState("");
+  const [prevTodos, setPrevTodos ] = useState[todoes]
+  const [isFiltered, setIsFiltered] = useState(false);
+
+
 
   //입력값이 변경될때마다 실행
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -19,6 +23,10 @@ function App() {
       setText("");
     }
     //console.log(todos)
+  }
+
+  const prevToggleFilter = () => {
+
   }
 
   return (
@@ -43,16 +51,22 @@ function App() {
         <button onClick={importantTodo}>
         중요만 보기
         </button>
-        {/* <button onClick={}>
+        <button onClick={prevToggleFilter}>
         전체보기
-        </button> */}
+        </button> 
       </div>
       {/* 리스트 */}
       <div>
+        <h2>안한거</h2>
         <ul>
           {todos.map((todo)=>(
             <Todoitem todo={todo}/>
           ))}
+        </ul>
+      </div>
+      <div>
+        <h2>완료</h2>
+        <ul>
         </ul>
       </div>
     </div>
