@@ -1,91 +1,132 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
-// 스토어에 일단 필요한거 다 담아야하는 배열, 추가한 todo(객체){id, 내용, 완료여부}...
-// 힘수 : 버튼누르면 추가하기 함수, 수정하기 함수, 삭제하기 함수, 완료상태변경함수 
+// Todo 타입 정의
 export type Todo = {
   id: number;
-  text: string;
+  title: string;
+  content: string;
   completed: boolean;
   isImportant: boolean;
+  date: string;
 };
 
-//Zustand 스토어 생성
-//왼쪽단어들은 함수명을 나타내는거고 사실 스토어 안에 함수를 만들고 그걸 전역으로 사용하게 하는게
-//Zustand인데 이때 함수를 반환하는것이 아니라 그저 상태값만 변경하는것이므로 반환값이 없는 ts의 void타입을 넣어야한다.(선택)
+// Zustand 스토어 타입
 type TodoStore = {
-  todos: Todo[];
-  addTodo: (text: string) => void; // 추가 기능
-  deleteTodo: (id: number) => void; // 삭제 기능
-  allDeleteTodo: () => void; //전체 삭제 기능
-  toggleTodo: (id: number) => void; // 완료 상태 변경
-  editTodo: (id: number, newText: string) => void; // 수정 기능
-  isFiltered: boolean; //필터 적용 여부
-  importantToggle: (id: number) => void; // 중요 표시 기능
-  importantTodo:( isImportant: boolean); // 중요 배열
-  importantFilterToggle: () => void; // 중요 필터 토글
-}
+
+  todos: Todo[]; // 원본 리스트
+  filteredTodos: Todo[]; // 필터링된 리스트
+  isFiltered: boolean; // 필터가 적용되었는지 여부
+  
+  title: string; // 제목
+  setTitle: (content: string) => void;
+
+  content: string; // 본문
+  setContent: (content: string) => void;
+
+  date: string; // 날짜 
+  setDate: (date: string) => void;
+
+  addTodo: (title: string, content: string, date: string) => void;  // 새 글 추가
+  deleteTodo: (id: number) => void;
+  allDeleteTodo: () => void;
+  endTodo: (id: number) => void; // 완료 된 리스트
+  editTodo: (id: number, newText: string, newTitle:string, date:string) => void;
+  importantToggle: (id: number) => void; // 중요 체크 토글
+  showImportantTodos: () => void; // 중요 항목만 보기
+  showAllTodos: () => void; // 전체 보기
+
+  isEditingId: number | null; 
+  setEditingId: (id: number | null) => void; // 수정 모드 
+};
 
 export const useTodoStore = create<TodoStore>()(
   persist(
     (set, get) => ({
       todos: [],
+      filteredTodos: [],
+      isFiltered: false,
 
-      importantFilterToggle: false, // 필터링 안됨
-      addTodo: (text) =>
+      title: "",
+      content: "",
+      date: "",
+      isEditingId: null,
+
+      setTitle: (title) => set({ title }),
+      setContent: (content) => set({ content }),
+      setDate: (date) => set({ date }),
+      setEditingId: (id) => set({ isEditingId: id }),
+
+      addTodo: (title, content, date) => {
         set((state) => ({
-          todos: [...state.todos, { id: Date.now(), text, completed: false, isImportant: false}],
-        })),
+          todos: [
+            ...state.todos,
+            {
+              id: Date.now(),
+              title,
+              content:content.trim() ? content: "\u00A0",
+              completed: false,
+              isImportant: false,
+              date,
+            },
+          ],
+        }));
+      },
+      
+      
+
       deleteTodo: (id) =>
         set((state) => ({
           todos: state.todos.filter((todo) => todo.id !== id),
         })),
-      toggleTodo: (id) =>
+
+      endTodo: (id) =>
         set((state) => ({
           todos: state.todos.map((todo) =>
             todo.id === id ? { ...todo, completed: !todo.completed } : todo
           ),
         })),
-      editTodo: (id, newText) =>
+
+      editTodo: (id, newTitle, newText, newDate) =>
         set((state) => ({
           todos: state.todos.map((todo) =>
-            todo.id === id ? { ...todo, text: newText } : todo
+            todo.id === id ? { ...todo, title: newTitle, content: newText, date: newDate } : todo 
           ),
         })),
+
       allDeleteTodo: () =>
         set(() => ({
           todos: [],
+          filteredTodos: [],
+          isFiltered: false,
         })),
+
       importantToggle: (id) =>
         set((state) => ({
-          todos: state.todos.map((todo) => 
-            todo.id === id ? {...todo, isImportant: !todo.isImportant} :todo
+          todos: state.todos.map((todo) =>
+            todo.id === id ? { ...todo, isImportant: !todo.isImportant } : todo
           ),
         })),
-      importantTodo: () =>
-        set((state) => ({
-          todos: state.todos.filter((todo) => todo.isImportant !== false),
-        })),
-      importantFilterToggle: () => {
-        const {isFiltered, todos} = get();
 
-        if (isFiltered) {
-          // 필터 해제 (전체 보기)
-          set({ filteredTodos: todos, isFiltered: false });
-        } else {
-          // 중요 투두만 보기
-          set({
-            filteredTodos: todos.filter((todo) => todo.isImportant),
-            isFiltered: true,
-          });
-        }
-      }
+      showImportantTodos: () => {
+        const { todos } = get();
+        set({
+          filteredTodos: todos.filter((todo) => todo.isImportant),
+          isFiltered: true,
+        });
+      },
+
+      showAllTodos: () => {
+        set({
+          filteredTodos: [],
+          isFiltered: false,
+        });
+      },
     }),
     {
-      name: "todo-storage", // 로컬 스토리지 키 이름
-      storage: createJSONStorage(() => localStorage), // localStorage 사용
+      name: "todo-storage",
+      storage: createJSONStorage(() => localStorage),
     }
   )
 );
-
 
