@@ -8,7 +8,7 @@ type TodoItemProps = {
 };
 
 export default function TodoItem({ todo }: TodoItemProps) {
-  const { endTodo, deleteTodo, editTodo, importantToggle, isEditingId, setEditingId} = useTodoStore();
+  const { endTodo, deleteTodo, importantToggle, isEditingId, setEditingId} = useTodoStore();
   const [editTitle, setEditTitle] = useState(todo.title);
   const [editText, setEditText] = useState(todo.content);
   const [editDate, setEditDate] = useState(todo.date);

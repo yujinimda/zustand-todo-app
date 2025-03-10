@@ -7,7 +7,7 @@ import { useRef } from "react";
 export default function WriteModal() {
   const { addTodo, content, setContent, title, setTitle, date, setDate } = useTodoStore();
   const { isOpen, closeModal } = useModalStore();
-  const dateInputRef = useRef(null);
+  const dateInputRef = useRef<HTMLInputElement | null>(null);
 
   if (!isOpen) return null;
 
