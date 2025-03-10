@@ -21,13 +21,19 @@ export default function TodoItem({ todo }: TodoItemProps) {
     setEditDate(todo.date); 
   }, [todo]);
 
+
+  useEffect(() => {
+    console.log(`중요 상태 변경됨: ${todo.isImportant}`); // 중요 상태 변경 확인
+  }, [todo.isImportant]);
+
   // 최신 상태로 수정 적용
   const handleEdit = () => {
     if (editTitle.trim() && editText.trim() && editDate.trim()) {
-      editTodo(todo.id, editTitle, editText, editDate);
+      const store = useTodoStore.getState(); // Zustand에서 최신 상태 직접 가져오기
+      store.editTodo(todo.id, editTitle, editText, editDate);
     }
     setEditingId(null);
-    setEditingField(null); // 수정 모드 종료 시 초기화
+    setEditingField(null);
   };
 
   return (

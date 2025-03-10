@@ -73,26 +73,50 @@ export const useTodoStore = create<TodoStore>()(
         }));
       },
       
+      deleteTodo: (id) => {
+        set((state) => {
+          const updatedTodos = state.todos.filter((todo) => todo.id !== id);
       
+          return {
+            todos: updatedTodos,
+            filteredTodos: state.isFiltered
+              ? updatedTodos.filter((todo) => todo.isImportant)
+              : [],
+          };
+        });
+      },
 
-      deleteTodo: (id) =>
-        set((state) => ({
-          todos: state.todos.filter((todo) => todo.id !== id),
-        })),
-
-      endTodo: (id) =>
-        set((state) => ({
-          todos: state.todos.map((todo) =>
+      endTodo: (id) => {
+        set((state) => {
+          const updatedTodos = state.todos.map((todo) =>
             todo.id === id ? { ...todo, completed: !todo.completed } : todo
-          ),
-        })),
+          );
 
-      editTodo: (id, newTitle, newText, newDate) =>
-        set((state) => ({
-          todos: state.todos.map((todo) =>
-            todo.id === id ? { ...todo, title: newTitle, content: newText, date: newDate } : todo 
-          ),
-        })),
+          return {
+            todos: updatedTodos,
+            filteredTodos: state.isFiltered
+              ? updatedTodos.filter((todo) => todo.isImportant)
+              : [],
+          };
+        });
+      },
+
+      editTodo: (id, newTitle, newText, newDate) => {
+        set((state) => {
+          const updatedTodos = state.todos.map((todo) =>
+            todo.id === id
+              ? { ...todo, title: newTitle, content: newText, date: newDate }
+              : todo
+          );
+      
+          return {
+            todos: updatedTodos,
+            filteredTodos: state.isFiltered
+              ? updatedTodos.filter((todo) => todo.isImportant)
+              : [],
+          };
+        });
+      },
 
       allDeleteTodo: () =>
         set(() => ({
@@ -101,13 +125,22 @@ export const useTodoStore = create<TodoStore>()(
           isFiltered: false,
         })),
 
-      importantToggle: (id) =>
-        set((state) => ({
-          todos: state.todos.map((todo) =>
+      importantToggle: (id) => {
+        set((state) => {
+          const updatedTodos = state.todos.map((todo) =>
             todo.id === id ? { ...todo, isImportant: !todo.isImportant } : todo
-          ),
-        })),
-
+          );
+      
+          // 필터 적용 여부에 따라 중요 리스트 업데이트
+          return {
+            todos: updatedTodos,
+            filteredTodos: state.isFiltered
+              ? updatedTodos.filter((todo) => todo.isImportant)
+              : [],
+          };
+        });
+      },
+        
       showImportantTodos: () => {
         const { todos } = get();
         set({
